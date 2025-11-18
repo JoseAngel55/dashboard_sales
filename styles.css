@@ -1,0 +1,25 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #0e0e0e;
+    color: white;
+    padding: 20px;
+}
+
+.title {
+    text-align: center;
+    color: #00eaff;
+    margin-bottom: 40px;
+    font-size: 32px;
+}
+
+.section-title {
+    margin-top: 40px;
+    color: #00eaff;
+    font-size: 22px;
+}
+
+.chart-container {
+    width: 75%;
+    margin: auto;
+    padding: 20px 0;
+}
