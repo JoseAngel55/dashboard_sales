@@ -4,29 +4,36 @@
     <meta charset="UTF-8">
     <title>Sales Dashboard</title>
 
-    <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <!-- Estilos -->
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
 
     <h1 class="title">Sales & Performance Dashboard</h1>
 
+    <!-- Ventas por categoría -->
     <h2 class="section-title">🔹 Ventas por Categoría</h2>
-    <div class="chart-container"><canvas id="categorySales"></canvas></div>
+    <div class="chart-container">
+        <canvas id="salesByCategoryChart"></canvas>
+    </div>
 
+    <!-- Margen promedio -->
     <h2 class="section-title">🔹 Margen Promedio por Categoría</h2>
-    <div class="chart-container"><canvas id="categoryMargin"></canvas></div>
+    <div class="chart-container">
+        <canvas id="profitMarginChart"></canvas>
+    </div>
 
+    <!-- Cantidad por región -->
     <h2 class="section-title">🔹 Cantidad Vendida por Región</h2>
-    <div class="chart-container"><canvas id="regionQuantity"></canvas></div>
+    <div class="chart-container">
+        <canvas id="quantityByRegionChart"></canvas>
+    </div>
 
+    <!-- Top 5 productos por región -->
     <h2 class="section-title">🔹 Top 5 Productos por Región</h2>
-    <div class="chart-container"><canvas id="topProducts"></canvas></div>
+    <div id="topProductsContainer" class="chart-container"></div>
 
-    <!-- Archivo JS -->
     <script src="app.js"></script>
 
 </body>
