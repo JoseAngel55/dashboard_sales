@@ -12,11 +12,11 @@
         box-sizing: border-box;
       }
 
-      /* --- Estilo general limpio corporativo --- */
+      /* --- Estilo general tipo Power BI dark --- */
       body {
-        font-family: "Inter", "Segoe UI", sans-serif;
-        background: #f5f7fa;
-        color: #2b2b2b;
+        font-family: "Segoe UI", "Inter", sans-serif;
+        background: #1e1e1e;
+        color: #e6e6e6;
         padding: 25px;
         min-height: 100vh;
       }
@@ -30,36 +30,36 @@
         text-align: center;
         padding: 25px 0;
         margin-bottom: 35px;
-        border-bottom: 1px solid #d1d1d1;
+        border-bottom: 1px solid #333;
       }
 
       h1 {
         font-size: 2.4em;
-        font-weight: 700;
-        color: #2f4b7c;
+        font-weight: 600;
+        color: #f0f0f0;
       }
 
       .subtitle {
         font-size: 1.1em;
-        color: #6b7280;
+        color: #b5b5b5;
       }
 
-      /* --- Carga --- */
+      /* --- Loading --- */
       .loading {
         text-align: center;
-        padding: 60px 0;
-        font-size: 1.2em;
-        color: #2f4b7c;
+        padding: 40px;
+        font-size: 1.1em;
+        color: #f0f0f0;
       }
 
       .spinner {
-        border: 4px solid #e0e0e0;
-        border-top: 4px solid #2f4b7c;
+        border: 4px solid #444;
+        border-top: 4px solid #f0c929;
         border-radius: 50%;
-        width: 48px;
-        height: 48px;
+        width: 45px;
+        height: 45px;
+        margin: 15px auto;
         animation: spin 1s linear infinite;
-        margin: 20px auto;
       }
 
       @keyframes spin {
@@ -68,7 +68,7 @@
         }
       }
 
-      /* --- Tarjetas y grid --- */
+      /* --- Tarjetas estilo Tableau --- */
       .dashboard-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
@@ -77,63 +77,60 @@
       }
 
       .card {
-        background: #ffffff;
+        background: #262626;
         border-radius: 12px;
         padding: 25px;
-        border: 1px solid #e5e7eb;
-        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
-        transition: transform 0.25s ease, box-shadow 0.25s ease;
+        border: 1px solid #3a3a3a;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        transition: 0.25s ease;
       }
 
       .card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+        border-color: #5a5a5a;
       }
 
       .card-title {
         font-size: 1.35em;
         font-weight: 600;
-        color: #2f4b7c;
+        color: #f0f0f0;
         margin-bottom: 18px;
         padding-bottom: 8px;
-        border-bottom: 2px solid #e5e7eb;
+        border-bottom: 1px solid #3a3a3a;
       }
 
       /* --- Gráficas --- */
       .chart-container {
         position: relative;
         height: 340px;
-        margin-top: 10px;
       }
 
-      /* --- Estadísticas globales --- */
       .stats-grid {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap: 18px;
-        margin-top: 15px;
       }
 
+      /* --- Resaltado estilo Power BI --- */
       .stat-box {
-        background: #f0f4ff;
-        border-left: 4px solid #2f4b7c;
+        background: #2f2f2f;
         padding: 15px;
         border-radius: 8px;
+        border-left: 4px solid #f0c929; /* Amarillo Power BI */
       }
 
       .stat-label {
-        color: #6b7280;
+        color: #b5b5b5;
         font-size: 0.9em;
       }
 
       .stat-value {
         font-size: 1.8em;
         font-weight: 700;
+        color: #f0c929;
         margin-top: 5px;
-        color: #2f4b7c;
       }
 
-      /* --- Tabs de regiones --- */
+      /* --- Tabs estilo Tableau --- */
       .region-section {
         margin-top: 30px;
       }
@@ -146,36 +143,35 @@
       }
 
       .tab-btn {
-        background: #ffffff;
-        border: 1px solid #d1d5db;
+        background: #2d2d2d;
+        border: 1px solid #474747;
         padding: 8px 18px;
         font-size: 0.95em;
         border-radius: 7px;
+        color: #e0e0e0;
         cursor: pointer;
-        transition: 0.25s ease;
-        color: #374151;
+        transition: 0.2s ease;
       }
 
       .tab-btn:hover {
-        background: #eef2ff;
-        border-color: #2f4b7c;
+        background: #3a3a3a;
       }
 
       .tab-btn.active {
-        background: #2f4b7c;
-        color: #ffffff;
-        border-color: #2f4b7c;
+        background: #f0c929;
+        color: #1e1e1e;
+        border-color: #d9aa00;
         font-weight: 600;
       }
 
       /* --- Error --- */
       .error {
-        background: #fde8e8;
-        border: 1px solid #e53e3e;
+        background: #412828;
+        border: 1px solid #a94141;
         padding: 18px;
         border-radius: 10px;
         margin-top: 20px;
-        color: #b91c1c;
+        color: #ffb3b3;
       }
 
       /* --- Responsive --- */
