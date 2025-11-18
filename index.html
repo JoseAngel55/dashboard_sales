@@ -1,522 +1,553 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sales Analytics Dashboard</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            color: #e0e0e0;
-            min-height: 100vh;
-            padding: 20px;
-        }
+      /* --- Estilo general limpio corporativo --- */
+      body {
+        font-family: "Inter", "Segoe UI", sans-serif;
+        background: #f5f7fa;
+        color: #2b2b2b;
+        padding: 25px;
+        min-height: 100vh;
+      }
 
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+      }
 
-        header {
-            text-align: center;
-            padding: 30px 0;
-            margin-bottom: 40px;
-            border-bottom: 2px solid #0f3460;
+      header {
+        text-align: center;
+        padding: 25px 0;
+        margin-bottom: 35px;
+        border-bottom: 1px solid #d1d1d1;
+      }
+
+      h1 {
+        font-size: 2.4em;
+        font-weight: 700;
+        color: #2f4b7c;
+      }
+
+      .subtitle {
+        font-size: 1.1em;
+        color: #6b7280;
+      }
+
+      /* --- Carga --- */
+      .loading {
+        text-align: center;
+        padding: 60px 0;
+        font-size: 1.2em;
+        color: #2f4b7c;
+      }
+
+      .spinner {
+        border: 4px solid #e0e0e0;
+        border-top: 4px solid #2f4b7c;
+        border-radius: 50%;
+        width: 48px;
+        height: 48px;
+        animation: spin 1s linear infinite;
+        margin: 20px auto;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* --- Tarjetas y grid --- */
+      .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+        gap: 25px;
+        margin-bottom: 35px;
+      }
+
+      .card {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 25px;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+      }
+
+      .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+      }
+
+      .card-title {
+        font-size: 1.35em;
+        font-weight: 600;
+        color: #2f4b7c;
+        margin-bottom: 18px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #e5e7eb;
+      }
+
+      /* --- Gráficas --- */
+      .chart-container {
+        position: relative;
+        height: 340px;
+        margin-top: 10px;
+      }
+
+      /* --- Estadísticas globales --- */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 18px;
+        margin-top: 15px;
+      }
+
+      .stat-box {
+        background: #f0f4ff;
+        border-left: 4px solid #2f4b7c;
+        padding: 15px;
+        border-radius: 8px;
+      }
+
+      .stat-label {
+        color: #6b7280;
+        font-size: 0.9em;
+      }
+
+      .stat-value {
+        font-size: 1.8em;
+        font-weight: 700;
+        margin-top: 5px;
+        color: #2f4b7c;
+      }
+
+      /* --- Tabs de regiones --- */
+      .region-section {
+        margin-top: 30px;
+      }
+
+      .region-tabs {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+      }
+
+      .tab-btn {
+        background: #ffffff;
+        border: 1px solid #d1d5db;
+        padding: 8px 18px;
+        font-size: 0.95em;
+        border-radius: 7px;
+        cursor: pointer;
+        transition: 0.25s ease;
+        color: #374151;
+      }
+
+      .tab-btn:hover {
+        background: #eef2ff;
+        border-color: #2f4b7c;
+      }
+
+      .tab-btn.active {
+        background: #2f4b7c;
+        color: #ffffff;
+        border-color: #2f4b7c;
+        font-weight: 600;
+      }
+
+      /* --- Error --- */
+      .error {
+        background: #fde8e8;
+        border: 1px solid #e53e3e;
+        padding: 18px;
+        border-radius: 10px;
+        margin-top: 20px;
+        color: #b91c1c;
+      }
+
+      /* --- Responsive --- */
+      @media (max-width: 768px) {
+        .dashboard-grid {
+          grid-template-columns: 1fr;
         }
 
         h1 {
-            font-size: 2.5em;
-            color: #00d4ff;
-            text-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
-            margin-bottom: 10px;
+          font-size: 1.9em;
         }
-
-        .subtitle {
-            color: #a0a0a0;
-            font-size: 1.1em;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 50px;
-            font-size: 1.2em;
-            color: #00d4ff;
-        }
-
-        .spinner {
-            border: 4px solid #0f3460;
-            border-top: 4px solid #00d4ff;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-            gap: 25px;
-            margin-bottom: 30px;
-        }
-
-        .card {
-            background: rgba(15, 52, 96, 0.4);
-            border-radius: 15px;
-            padding: 25px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(0, 212, 255, 0.2);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 40px rgba(0, 212, 255, 0.2);
-        }
-
-        .card-title {
-            font-size: 1.4em;
-            color: #00d4ff;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid rgba(0, 212, 255, 0.3);
-        }
-
-        .chart-container {
-            position: relative;
-            height: 350px;
-            margin-top: 20px;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .stat-box {
-            background: rgba(0, 212, 255, 0.1);
-            padding: 15px;
-            border-radius: 10px;
-            border-left: 3px solid #00d4ff;
-        }
-
-        .stat-label {
-            color: #a0a0a0;
-            font-size: 0.9em;
-            margin-bottom: 5px;
-        }
-
-        .stat-value {
-            color: #00d4ff;
-            font-size: 1.8em;
-            font-weight: bold;
-        }
-
-        .region-section {
-            margin-top: 30px;
-        }
-
-        .region-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .tab-btn {
-            background: rgba(0, 212, 255, 0.1);
-            border: 1px solid rgba(0, 212, 255, 0.3);
-            color: #00d4ff;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 1em;
-        }
-
-        .tab-btn:hover {
-            background: rgba(0, 212, 255, 0.2);
-            transform: translateY(-2px);
-        }
-
-        .tab-btn.active {
-            background: #00d4ff;
-            color: #1a1a2e;
-            font-weight: bold;
-        }
-
-        .error {
-            background: rgba(255, 50, 50, 0.2);
-            border: 1px solid rgba(255, 50, 50, 0.5);
-            padding: 20px;
-            border-radius: 10px;
-            margin: 20px 0;
-            color: #ff6b6b;
-        }
-
-        @media (max-width: 768px) {
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-
-            h1 {
-                font-size: 1.8em;
-            }
-        }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <header>
-            <h1>📊 Sales Analytics Dashboard</h1>
-            <p class="subtitle">Panel de control de ventas y análisis de datos</p>
-        </header>
+      <header>
+        <h1>📊 Sales Analytics Dashboard</h1>
+        <p class="subtitle">Panel de control de ventas y análisis de datos</p>
+      </header>
 
-        <div id="loading" class="loading">
-            <div class="spinner"></div>
-            <p>Cargando datos...</p>
+      <div id="loading" class="loading">
+        <div class="spinner"></div>
+        <p>Cargando datos...</p>
+      </div>
+
+      <div id="dashboard" style="display: none">
+        <div class="dashboard-grid">
+          <!-- Sales by Category -->
+          <div class="card">
+            <h2 class="card-title">Ventas por Categoría</h2>
+            <div class="chart-container">
+              <canvas id="salesChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Profit Margin -->
+          <div class="card">
+            <h2 class="card-title">Margen de Ganancia</h2>
+            <div class="chart-container">
+              <canvas id="marginChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Quantity by Region -->
+          <div class="card">
+            <h2 class="card-title">Cantidad por Región</h2>
+            <div class="chart-container">
+              <canvas id="quantityChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Global Stats -->
+          <div class="card">
+            <h2 class="card-title">Estadísticas Globales</h2>
+            <div class="stats-grid">
+              <div class="stat-box">
+                <div class="stat-label">Ventas Totales</div>
+                <div class="stat-value" id="totalSales">-</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-label">Margen Promedio</div>
+                <div class="stat-value" id="avgMargin">-</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-label">Cantidad Total</div>
+                <div class="stat-value" id="totalQuantity">-</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-label">Categorías</div>
+                <div class="stat-value" id="totalCategories">-</div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div id="dashboard" style="display: none;">
-            <div class="dashboard-grid">
-                <!-- Sales by Category -->
-                <div class="card">
-                    <h2 class="card-title">Ventas por Categoría</h2>
-                    <div class="chart-container">
-                        <canvas id="salesChart"></canvas>
-                    </div>
-                </div>
-
-                <!-- Profit Margin -->
-                <div class="card">
-                    <h2 class="card-title">Margen de Ganancia</h2>
-                    <div class="chart-container">
-                        <canvas id="marginChart"></canvas>
-                    </div>
-                </div>
-
-                <!-- Quantity by Region -->
-                <div class="card">
-                    <h2 class="card-title">Cantidad por Región</h2>
-                    <div class="chart-container">
-                        <canvas id="quantityChart"></canvas>
-                    </div>
-                </div>
-
-                <!-- Global Stats -->
-                <div class="card">
-                    <h2 class="card-title">Estadísticas Globales</h2>
-                    <div class="stats-grid">
-                        <div class="stat-box">
-                            <div class="stat-label">Ventas Totales</div>
-                            <div class="stat-value" id="totalSales">-</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-label">Margen Promedio</div>
-                            <div class="stat-value" id="avgMargin">-</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-label">Cantidad Total</div>
-                            <div class="stat-value" id="totalQuantity">-</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-label">Categorías</div>
-                            <div class="stat-value" id="totalCategories">-</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Top Products by Region -->
-            <div class="card region-section">
-                <h2 class="card-title">Top 5 Productos por Región</h2>
-                <div class="region-tabs">
-                    <button class="tab-btn active" onclick="showRegion('West')">West</button>
-                    <button class="tab-btn" onclick="showRegion('East')">East</button>
-                    <button class="tab-btn" onclick="showRegion('North')">North</button>
-                    <button class="tab-btn" onclick="showRegion('South')">South</button>
-                </div>
-                <div class="chart-container" style="height: 400px;">
-                    <canvas id="productsChart"></canvas>
-                </div>
-            </div>
+        <!-- Top Products by Region -->
+        <div class="card region-section">
+          <h2 class="card-title">Top 5 Productos por Región</h2>
+          <div class="region-tabs">
+            <button class="tab-btn active" onclick="showRegion('West')">
+              West
+            </button>
+            <button class="tab-btn" onclick="showRegion('East')">East</button>
+            <button class="tab-btn" onclick="showRegion('North')">North</button>
+            <button class="tab-btn" onclick="showRegion('South')">South</button>
+          </div>
+          <div class="chart-container" style="height: 400px">
+            <canvas id="productsChart"></canvas>
+          </div>
         </div>
+      </div>
     </div>
 
     <script>
-        const API_URLS = {
-            sales: 'https://pnqqx8vov2.execute-api.us-east-1.amazonaws.com/default/sales-by-category',
-            margin: 'https://9dsja5jc16.execute-api.us-east-1.amazonaws.com/default/profit-margin',
-            quantity: 'https://lqo7pykt20.execute-api.us-east-1.amazonaws.com/default/quantity-by-region',
-            products: 'https://8j8r9l77ac.execute-api.us-east-1.amazonaws.com/default/top5-products'
-        };
+      const API_URLS = {
+        sales:
+          "https://pnqqx8vov2.execute-api.us-east-1.amazonaws.com/default/sales-by-category",
+        margin:
+          "https://9dsja5jc16.execute-api.us-east-1.amazonaws.com/default/profit-margin",
+        quantity:
+          "https://lqo7pykt20.execute-api.us-east-1.amazonaws.com/default/quantity-by-region",
+        products:
+          "https://8j8r9l77ac.execute-api.us-east-1.amazonaws.com/default/top5-products",
+      };
 
-        let chartsData = {};
-        let productsChart = null;
+      let chartsData = {};
+      let productsChart = null;
 
-        Chart.defaults.color = '#e0e0e0';
-        Chart.defaults.borderColor = 'rgba(0, 212, 255, 0.2)';
+      Chart.defaults.color = "#e0e0e0";
+      Chart.defaults.borderColor = "rgba(0, 212, 255, 0.2)";
 
-        async function fetchData() {
-            try {
-                const [sales, margin, quantity, products] = await Promise.all([
-                    fetch(API_URLS.sales).then(r => r.json()),
-                    fetch(API_URLS.margin).then(r => r.json()),
-                    fetch(API_URLS.quantity).then(r => r.json()),
-                    fetch(API_URLS.products).then(r => r.json())
-                ]);
+      async function fetchData() {
+        try {
+          const [sales, margin, quantity, products] = await Promise.all([
+            fetch(API_URLS.sales).then((r) => r.json()),
+            fetch(API_URLS.margin).then((r) => r.json()),
+            fetch(API_URLS.quantity).then((r) => r.json()),
+            fetch(API_URLS.products).then((r) => r.json()),
+          ]);
 
-                chartsData = { sales, margin, quantity, products };
-                
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('dashboard').style.display = 'block';
-                
-                renderCharts();
-            } catch (error) {
-                document.getElementById('loading').innerHTML = `
+          chartsData = { sales, margin, quantity, products };
+
+          document.getElementById("loading").style.display = "none";
+          document.getElementById("dashboard").style.display = "block";
+
+          renderCharts();
+        } catch (error) {
+          document.getElementById("loading").innerHTML = `
                     <div class="error">
                         <h3>Error al cargar los datos</h3>
                         <p>${error.message}</p>
                     </div>
                 `;
-            }
         }
+      }
 
-        function renderCharts() {
-            renderSalesChart();
-            renderMarginChart();
-            renderQuantityChart();
-            renderGlobalStats();
-            showRegion('West');
-        }
+      function renderCharts() {
+        renderSalesChart();
+        renderMarginChart();
+        renderQuantityChart();
+        renderGlobalStats();
+        showRegion("West");
+      }
 
-        function renderSalesChart() {
-            const ctx = document.getElementById('salesChart').getContext('2d');
-            const data = chartsData.sales;
+      function renderSalesChart() {
+        const ctx = document.getElementById("salesChart").getContext("2d");
+        const data = chartsData.sales;
 
-            new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: data.categories.map(c => c.category),
-                    datasets: [{
-                        data: data.categories.map(c => c.total_sales),
-                        backgroundColor: [
-                            'rgba(0, 212, 255, 0.8)',
-                            'rgba(255, 107, 107, 0.8)',
-                            'rgba(106, 255, 166, 0.8)',
-                            'rgba(255, 209, 102, 0.8)'
-                        ],
-                        borderColor: '#1a1a2e',
-                        borderWidth: 2
-                    }]
+        new Chart(ctx, {
+          type: "doughnut",
+          data: {
+            labels: data.categories.map((c) => c.category),
+            datasets: [
+              {
+                data: data.categories.map((c) => c.total_sales),
+                backgroundColor: [
+                  "rgba(0, 212, 255, 0.8)",
+                  "rgba(255, 107, 107, 0.8)",
+                  "rgba(106, 255, 166, 0.8)",
+                  "rgba(255, 209, 102, 0.8)",
+                ],
+                borderColor: "#1a1a2e",
+                borderWidth: 2,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: "bottom",
+                labels: { padding: 15, font: { size: 12 } },
+              },
+              tooltip: {
+                callbacks: {
+                  label: function (context) {
+                    const label = context.label || "";
+                    const value = context.parsed || 0;
+                    const percentage =
+                      chartsData.sales.categories[context.dataIndex].percentage;
+                    return `${label}: $${value.toLocaleString()} (${percentage}%)`;
+                  },
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: { padding: 15, font: { size: 12 } }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const label = context.label || '';
-                                    const value = context.parsed || 0;
-                                    const percentage = chartsData.sales.categories[context.dataIndex].percentage;
-                                    return `${label}: $${value.toLocaleString()} (${percentage}%)`;
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        }
+              },
+            },
+          },
+        });
+      }
 
-        function renderMarginChart() {
-            const ctx = document.getElementById('marginChart').getContext('2d');
-            const data = chartsData.margin;
+      function renderMarginChart() {
+        const ctx = document.getElementById("marginChart").getContext("2d");
+        const data = chartsData.margin;
 
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: data.categories.map(c => c.category),
-                    datasets: [{
-                        label: 'Margen Promedio',
-                        data: data.categories.map(c => (c.average_margin * 100).toFixed(2)),
-                        backgroundColor: 'rgba(0, 212, 255, 0.6)',
-                        borderColor: 'rgba(0, 212, 255, 1)',
-                        borderWidth: 2
-                    }]
+        new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: data.categories.map((c) => c.category),
+            datasets: [
+              {
+                label: "Margen Promedio",
+                data: data.categories.map((c) =>
+                  (c.average_margin * 100).toFixed(2)
+                ),
+                backgroundColor: "rgba(0, 212, 255, 0.6)",
+                borderColor: "rgba(0, 212, 255, 1)",
+                borderWidth: 2,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  callback: function (value) {
+                    return value + "%";
+                  },
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                callback: function(value) {
-                                    return value + '%';
-                                }
-                            },
-                            grid: { color: 'rgba(0, 212, 255, 0.1)' }
-                        },
-                        x: {
-                            grid: { display: false }
-                        }
-                    },
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return `Margen: ${context.parsed.y}%`;
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        function renderQuantityChart() {
-            const ctx = document.getElementById('quantityChart').getContext('2d');
-            const data = chartsData.quantity;
-
-            new Chart(ctx, {
-                type: 'polarArea',
-                data: {
-                    labels: data.regions.map(r => r.region),
-                    datasets: [{
-                        data: data.regions.map(r => r.total_quantity),
-                        backgroundColor: [
-                            'rgba(0, 212, 255, 0.6)',
-                            'rgba(255, 107, 107, 0.6)',
-                            'rgba(106, 255, 166, 0.6)',
-                            'rgba(255, 209, 102, 0.6)'
-                        ],
-                        borderColor: '#1a1a2e',
-                        borderWidth: 2
-                    }]
+                grid: { color: "rgba(0, 212, 255, 0.1)" },
+              },
+              x: {
+                grid: { display: false },
+              },
+            },
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: function (context) {
+                    return `Margen: ${context.parsed.y}%`;
+                  },
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: { padding: 15, font: { size: 12 } }
-                        }
-                    },
-                    scales: {
-                        r: {
-                            ticks: { backdropColor: 'transparent' },
-                            grid: { color: 'rgba(0, 212, 255, 0.2)' }
-                        }
-                    }
-                }
-            });
+              },
+            },
+          },
+        });
+      }
+
+      function renderQuantityChart() {
+        const ctx = document.getElementById("quantityChart").getContext("2d");
+        const data = chartsData.quantity;
+
+        new Chart(ctx, {
+          type: "polarArea",
+          data: {
+            labels: data.regions.map((r) => r.region),
+            datasets: [
+              {
+                data: data.regions.map((r) => r.total_quantity),
+                backgroundColor: [
+                  "rgba(0, 212, 255, 0.6)",
+                  "rgba(255, 107, 107, 0.6)",
+                  "rgba(106, 255, 166, 0.6)",
+                  "rgba(255, 209, 102, 0.6)",
+                ],
+                borderColor: "#1a1a2e",
+                borderWidth: 2,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: "bottom",
+                labels: { padding: 15, font: { size: 12 } },
+              },
+            },
+            scales: {
+              r: {
+                ticks: { backdropColor: "transparent" },
+                grid: { color: "rgba(0, 212, 255, 0.2)" },
+              },
+            },
+          },
+        });
+      }
+
+      function renderGlobalStats() {
+        document.getElementById("totalSales").textContent =
+          "$" +
+          chartsData.sales.total_global_sales.toLocaleString("en-US", {
+            minimumFractionDigits: 2,
+          });
+
+        document.getElementById("avgMargin").textContent =
+          (chartsData.margin.global_average_margin * 100).toFixed(2) + "%";
+
+        document.getElementById("totalQuantity").textContent =
+          chartsData.quantity.global_total_quantity.toLocaleString();
+
+        document.getElementById("totalCategories").textContent =
+          chartsData.sales.categories.length;
+      }
+
+      function showRegion(region) {
+        document.querySelectorAll(".tab-btn").forEach((btn) => {
+          btn.classList.remove("active");
+          if (btn.textContent === region) {
+            btn.classList.add("active");
+          }
+        });
+
+        if (productsChart) {
+          productsChart.destroy();
         }
 
-        function renderGlobalStats() {
-            document.getElementById('totalSales').textContent = 
-                '$' + chartsData.sales.total_global_sales.toLocaleString('en-US', {minimumFractionDigits: 2});
-            
-            document.getElementById('avgMargin').textContent = 
-                (chartsData.margin.global_average_margin * 100).toFixed(2) + '%';
-            
-            document.getElementById('totalQuantity').textContent = 
-                chartsData.quantity.global_total_quantity.toLocaleString();
-            
-            document.getElementById('totalCategories').textContent = 
-                chartsData.sales.categories.length;
-        }
+        const ctx = document.getElementById("productsChart").getContext("2d");
+        const regionData = chartsData.products.regions[region];
 
-        function showRegion(region) {
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.textContent === region) {
-                    btn.classList.add('active');
-                }
-            });
-
-            if (productsChart) {
-                productsChart.destroy();
-            }
-
-            const ctx = document.getElementById('productsChart').getContext('2d');
-            const regionData = chartsData.products.regions[region];
-
-            productsChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: regionData.products.map(p => p.product_name),
-                    datasets: [{
-                        label: 'Ventas',
-                        data: regionData.products.map(p => p.total_sales),
-                        backgroundColor: [
-                            'rgba(0, 212, 255, 0.8)',
-                            'rgba(255, 107, 107, 0.8)',
-                            'rgba(106, 255, 166, 0.8)',
-                            'rgba(255, 209, 102, 0.8)',
-                            'rgba(186, 85, 211, 0.8)'
-                        ],
-                        borderColor: '#1a1a2e',
-                        borderWidth: 2
-                    }]
+        productsChart = new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: regionData.products.map((p) => p.product_name),
+            datasets: [
+              {
+                label: "Ventas",
+                data: regionData.products.map((p) => p.total_sales),
+                backgroundColor: [
+                  "rgba(0, 212, 255, 0.8)",
+                  "rgba(255, 107, 107, 0.8)",
+                  "rgba(106, 255, 166, 0.8)",
+                  "rgba(255, 209, 102, 0.8)",
+                  "rgba(186, 85, 211, 0.8)",
+                ],
+                borderColor: "#1a1a2e",
+                borderWidth: 2,
+              },
+            ],
+          },
+          options: {
+            indexAxis: "y",
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              x: {
+                beginAtZero: true,
+                grid: { color: "rgba(0, 212, 255, 0.1)" },
+                ticks: {
+                  callback: function (value) {
+                    return "$" + (value / 1000).toFixed(0) + "k";
+                  },
                 },
-                options: {
-                    indexAxis: 'y',
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        x: {
-                            beginAtZero: true,
-                            grid: { color: 'rgba(0, 212, 255, 0.1)' },
-                            ticks: {
-                                callback: function(value) {
-                                    return '$' + (value / 1000).toFixed(0) + 'k';
-                                }
-                            }
-                        },
-                        y: {
-                            grid: { display: false }
-                        }
-                    },
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const value = context.parsed.x;
-                                    const percentage = regionData.products[context.dataIndex].percentage_of_region;
-                                    return `Ventas: $${value.toLocaleString()} (${percentage}%)`;
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        }
+              },
+              y: {
+                grid: { display: false },
+              },
+            },
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: function (context) {
+                    const value = context.parsed.x;
+                    const percentage =
+                      regionData.products[context.dataIndex]
+                        .percentage_of_region;
+                    return `Ventas: $${value.toLocaleString()} (${percentage}%)`;
+                  },
+                },
+              },
+            },
+          },
+        });
+      }
 
-        fetchData();
+      fetchData();
     </script>
-</body>
+  </body>
 </html>
